@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Multi-Mode TEM & STEM Simulator (118 Elements)</title>
+    <title>Quantitative Multi-Mode TEM & STEM Metrology Lab (118 Elements)</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -18,62 +18,89 @@
         /* Left Control Panel */
         #ui-panel {
             position: absolute;
-            top: 12px;
-            left: 12px;
-            background: rgba(12, 16, 28, 0.90);
+            top: 10px;
+            left: 10px;
+            background: rgba(10, 14, 24, 0.92);
             backdrop-filter: blur(12px);
-            padding: 16px;
+            padding: 14px;
             border-radius: 12px;
             border: 1px solid rgba(0, 255, 200, 0.3);
-            width: 360px;
-            max-height: calc(100vh - 24px);
+            width: 345px;
+            max-height: calc(100vh - 20px);
             overflow-y: auto;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+            z-index: 10;
+        }
+        /* Right Quantitative Metrology Panel */
+        #quant-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(10, 14, 24, 0.92);
+            backdrop-filter: blur(12px);
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 210, 255, 0.35);
+            width: 380px;
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
             z-index: 10;
         }
         h1 {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             margin: 0 0 2px 0;
             color: #00ffcc;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
         }
-        p.subtitle { font-size: 0.74rem; color: #99a; margin: 0 0 10px 0; }
+        p.subtitle { font-size: 0.72rem; color: #99a; margin: 0 0 8px 0; }
         .section-title {
-            font-size: 0.74rem;
+            font-size: 0.72rem;
             font-weight: bold;
             color: #00d2ff;
-            margin: 12px 0 6px 0;
+            margin: 10px 0 5px 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        select {
+        select, input[type="range"] {
             width: 100%;
-            padding: 7px 10px;
+            padding: 6px 8px;
             background: #101626;
             color: #fff;
             border: 1px solid #00d2ff;
             border-radius: 6px;
-            font-size: 0.82rem;
-            margin-bottom: 6px;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
             cursor: pointer;
         }
-        .btn-group { display: flex; gap: 5px; flex-wrap: wrap; }
+        .param-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.74rem;
+            color: #ccc;
+            margin-bottom: 4px;
+            gap: 8px;
+        }
+        .param-row select { width: auto; flex: 1; margin-bottom: 0; padding: 4px 6px; }
+        .param-row input[type="range"] { flex: 1; margin-bottom: 0; }
+        .btn-group { display: flex; gap: 4px; flex-wrap: wrap; }
         .mode-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 5px;
+            gap: 4px;
         }
         button {
             flex: 1;
-            padding: 7px 6px;
+            padding: 6px 5px;
             background: rgba(255, 255, 255, 0.07);
             border: 1px solid rgba(0, 210, 255, 0.35);
             color: white;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 0.75rem;
-            transition: all 0.18s;
+            font-size: 0.72rem;
+            transition: all 0.16s;
         }
         button:hover { background: rgba(0, 210, 255, 0.25); transform: translateY(-1px); }
         button.active {
@@ -88,32 +115,32 @@
             border: 1px solid #00ffcc;
             color: #00ffcc;
             font-weight: bold;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
         button.action-btn {
             width: 100%;
-            margin-top: 7px;
+            margin-top: 6px;
             background: linear-gradient(45deg, #0088ff, #00ffcc);
             color: #000;
             font-weight: bold;
             border: none;
-            padding: 9px;
-            font-size: 0.82rem;
+            padding: 8px;
+            font-size: 0.78rem;
         }
-        /* Element Metadata Card */
+        /* Element Card */
         .elem-card {
             display: flex;
             align-items: center;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 8px;
-            padding: 8px 10px;
+            padding: 7px 9px;
             gap: 10px;
         }
         .elem-badge {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
+            width: 44px;
+            height: 44px;
+            border-radius: 7px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -122,10 +149,10 @@
             color: #000;
             flex-shrink: 0;
         }
-        .elem-badge .z-num { font-size: 0.62rem; line-height: 1; }
-        .elem-badge .sym { font-size: 1.25rem; line-height: 1.1; }
-        .elem-details { font-size: 0.74rem; line-height: 1.4; color: #ccc; }
-        .elem-details strong { color: #fff; font-size: 0.86rem; }
+        .elem-badge .z-num { font-size: 0.6rem; line-height: 1; }
+        .elem-badge .sym { font-size: 1.15rem; line-height: 1.1; }
+        .elem-details { font-size: 0.72rem; line-height: 1.35; color: #ccc; }
+        .elem-details strong { color: #fff; font-size: 0.84rem; }
         .tag {
             display: inline-block;
             padding: 1px 5px;
@@ -133,27 +160,55 @@
             border: 1px solid #00d2ff;
             border-radius: 4px;
             color: #00ffcc;
-            font-size: 0.68rem;
+            font-size: 0.65rem;
             font-weight: bold;
-        }
-        #info-box {
-            margin-top: 10px;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255,255,255,0.12);
-            font-size: 0.75rem;
-            line-height: 1.4;
-            color: #ccc;
         }
         .highlight { color: #00ffcc; font-weight: bold; }
 
-        /* 2D HUD Detector */
+        /* Metrology Readout Cards */
+        .formula-box {
+            background: rgba(0, 210, 255, 0.08);
+            border-left: 3px solid #00d2ff;
+            padding: 6px 9px;
+            font-family: 'Cambria Math', 'Courier New', monospace;
+            font-size: 0.76rem;
+            color: #b8f4ff;
+            margin-bottom: 8px;
+            border-radius: 0 5px 5px 0;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .metric-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 6px 8px;
+        }
+        .metric-card .m-label { font-size: 0.65rem; color: #99b; text-transform: uppercase; }
+        .metric-card .m-val { font-size: 0.92rem; font-weight: bold; color: #00ffcc; margin-top: 2px; }
+        .metric-card .m-sub { font-size: 0.63rem; color: #889; }
+
+        #plot-canvas {
+            width: 100%;
+            height: 115px;
+            background: #060a12;
+            border: 1px solid rgba(0, 255, 204, 0.25);
+            border-radius: 6px;
+            display: block;
+        }
+
+        /* 2D Detector HUD */
         #hud-label {
             position: absolute;
-            bottom: 292px;
-            right: 20px;
-            width: 265px;
+            bottom: 272px;
+            right: 15px;
+            width: 255px;
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.76rem;
             color: #00ffcc;
             font-weight: bold;
             pointer-events: none;
@@ -161,10 +216,10 @@
         }
         #hud-detector {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            width: 265px;
-            height: 265px;
+            bottom: 12px;
+            right: 15px;
+            width: 255px;
+            height: 255px;
             background: #020806;
             border: 2px solid #00ffcc;
             border-radius: 50%;
@@ -173,23 +228,9 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            cursor: crosshair;
+            z-index: 10;
         }
-
-        /* 3D Optical Column Labels */
-        .col-labels {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(12, 16, 28, 0.78);
-            border: 1px solid rgba(0, 210, 255, 0.3);
-            border-radius: 8px;
-            padding: 10px 14px;
-            font-size: 0.74rem;
-            line-height: 1.6;
-            color: #aad;
-            pointer-events: none;
-        }
-        .col-labels span { color: #00ffcc; font-weight: bold; }
 
         /* Periodic Table Modal */
         #ptable-modal {
@@ -214,17 +255,8 @@
             overflow-y: auto;
             box-shadow: 0 0 40px rgba(0, 255, 204, 0.2);
         }
-        .ptable-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .ptable-grid {
-            display: grid;
-            grid-template-columns: repeat(18, 1fr);
-            gap: 4px;
-        }
+        .ptable-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .ptable-grid { display: grid; grid-template-columns: repeat(18, 1fr); gap: 4px; }
         .pt-cell {
             aspect-ratio: 1;
             border-radius: 4px;
@@ -238,22 +270,11 @@
             transition: transform 0.15s, border-color 0.15s;
             user-select: none;
         }
-        .pt-cell:hover {
-            transform: scale(1.18);
-            z-index: 5;
-            border-color: #fff;
-            box-shadow: 0 0 10px #00ffcc;
-        }
+        .pt-cell:hover { transform: scale(1.18); z-index: 5; border-color: #fff; box-shadow: 0 0 10px #00ffcc; }
         .pt-cell .pt-z { font-size: 0.55rem; opacity: 0.85; }
         .pt-cell .pt-sym { font-size: 0.85rem; font-weight: bold; }
         .pt-cell .pt-struct { font-size: 0.5rem; opacity: 0.9; }
-        .legend-bar {
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-            margin-bottom: 12px;
-            font-size: 0.78rem;
-        }
+        .legend-bar { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; font-size: 0.78rem; }
         .legend-item { display: flex; align-items: center; gap: 5px; }
         .legend-swatch { width: 12px; height: 12px; border-radius: 3px; }
     </style>
@@ -265,31 +286,38 @@
 
 <div id="canvas-container"></div>
 
-<!-- Optical Column Status Pill -->
-<div class="col-labels">
-    <div>Illumination: <span id="col-illum">Parallel Beam (TEM)</span></div>
-    <div>Obj. Aperture (BFP): <span id="col-ap">Open / SAED</span></div>
-    <div>Detector Plane: <span id="col-det">Back Focal Plane (Reciprocal Space)</span></div>
-</div>
-
-<!-- Left Control Panel -->
+<!-- LEFT PANEL: Controls -->
 <div id="ui-panel">
-    <h1>Multi-Mode TEM / STEM</h1>
-    <p class="subtitle">8 Imaging & Diffraction Modes • 118 Elements</p>
+    <h1>TEM / STEM Metrology Lab</h1>
+    <p class="subtitle">8 Modes • 118 Elements • Live Property Extraction</p>
 
-    <div class="section-title">1. TEM / STEM Operating Mode</div>
+    <div class="section-title">1. Operating Mode</div>
     <div class="mode-grid">
-        <button id="mode-SAED" class="active" onclick="setTEMMode('SAED')">SAED<br><small>Spot Diffraction</small></button>
-        <button id="mode-CBED" onclick="setTEMMode('CBED')">CBED<br><small>Convergent Discs</small></button>
-        <button id="mode-PED" onclick="setTEMMode('PED')">PED<br><small>Precession Beam</small></button>
-        <button id="mode-BF" onclick="setTEMMode('BF')">BF-TEM<br><small>Bright-Field Image</small></button>
-        <button id="mode-DF" onclick="setTEMMode('DF')">DF-TEM<br><small>Dark-Field Image</small></button>
-        <button id="mode-HRTEM" onclick="setTEMMode('HRTEM')">HRTEM<br><small>Phase Lattice Image</small></button>
-        <button id="mode-HAADF" onclick="setTEMMode('HAADF')">HAADF-STEM<br><small>Z-Contrast (∝ Z¹·⁷)</small></button>
-        <button id="mode-ABF" onclick="setTEMMode('ABF')">ABF-STEM<br><small>Light-Atom STEM</small></button>
+        <button id="mode-SAED" class="active" onclick="setTEMMode('SAED')">SAED<br><small>d-Spacing & Indexing</small></button>
+        <button id="mode-CBED" onclick="setTEMMode('CBED')">CBED<br><small>Thickness & ξg Fit</small></button>
+        <button id="mode-PED" onclick="setTEMMode('PED')">PED<br><small>Structure Factor |Fhkl|</small></button>
+        <button id="mode-BF" onclick="setTEMMode('BF')">BF-TEM<br><small>Mean Free Path Λ</small></button>
+        <button id="mode-DF" onclick="setTEMMode('DF')">DF-TEM<br><small>Grain Size & Strain</small></button>
+        <button id="mode-HRTEM" onclick="setTEMMode('HRTEM')">HRTEM<br><small>CTF & Fringe Spacing</small></button>
+        <button id="mode-HAADF" onclick="setTEMMode('HAADF')">HAADF-STEM<br><small>Z-Contrast & Atom Count</small></button>
+        <button id="mode-ABF" onclick="setTEMMode('ABF')">ABF-STEM<br><small>Light-Atom Channeling</small></button>
     </div>
 
-    <div class="section-title">2. Choose Chemical Element (1–118)</div>
+    <div class="section-title">2. Microscope Beam & Specimen Parameters</div>
+    <div class="param-row">
+        <span>Voltage (kV):</span>
+        <select id="kv-select" onchange="updateMicroscopeParams()">
+            <option value="80">80 kV (λ = 4.18 pm)</option>
+            <option value="200" selected>200 kV (λ = 2.51 pm)</option>
+            <option value="300">300 kV (λ = 1.97 pm)</option>
+        </select>
+    </div>
+    <div class="param-row">
+        <span>Specimen Thickness <i>t</i>: <strong id="lbl-thick" style="color:#00ffcc;">45 nm</strong></span>
+        <input type="range" id="thick-slider" min="10" max="120" value="45" oninput="updateMicroscopeParams()">
+    </div>
+
+    <div class="section-title">3. Chemical Element (Z = 1–118)</div>
     <button class="ptable-btn" onclick="togglePTable(true)">🔬 Open Periodic Table (118 Elements)</button>
     <select id="element-select" onchange="selectElement(parseInt(this.value))"></select>
 
@@ -300,36 +328,49 @@
         </div>
         <div class="elem-details">
             <strong id="card-name">Gold</strong> <span id="card-struct" class="tag">FCC</span><br>
-            Lattice <i>a</i>: <span id="card-a" class="highlight">4.08 Å</span> | Z = <span id="card-z2">79</span><br>
-            <span id="card-note" style="font-size:0.68rem; color:#889;">Standard STP Crystal</span>
+            True <i>a</i>: <span id="card-a" class="highlight">4.08 Å</span> | Z = <span id="card-z2">79</span><br>
+            <span id="card-note" style="font-size:0.66rem; color:#889;">Standard TEM Calibration</span>
         </div>
     </div>
 
-    <div class="section-title">3. Crystal Zone Axis [u v w]</div>
-    <div class="btn-group" id="zone-btns">
+    <div class="section-title">4. Zone Axis & Camera View</div>
+    <div class="btn-group" id="zone-btns" style="margin-bottom:5px;">
         <button id="btn-001" class="active" onclick="setZoneAxis('001')">[0 0 1]<br><small id="lbl-001">4-Fold</small></button>
         <button id="btn-011" onclick="setZoneAxis('011')">[0 1 1]<br><small id="lbl-011">2-Fold</small></button>
         <button id="btn-111" onclick="setZoneAxis('111')">[1 1 1]<br><small id="lbl-111">6-Fold</small></button>
     </div>
-
-    <div class="section-title">4. Camera Perspectives</div>
     <div class="btn-group">
-        <button onclick="moveCamera('overview')">Column View</button>
-        <button onclick="moveCamera('crystal')">Lattice View</button>
-        <button onclick="moveCamera('screen')">Detector View</button>
+        <button onclick="moveCamera('overview')">Column</button>
+        <button onclick="moveCamera('crystal')">Lattice</button>
+        <button onclick="moveCamera('screen')">Detector</button>
     </div>
     <button class="action-btn" onclick="followElectronBeam()">▶ Follow Electron Beam</button>
+</div>
 
-    <div id="info-box">
-        <strong>Mode: <span id="mode-title" class="highlight">SAED (Selected Area Diffraction)</span></strong><br>
-        <span id="mode-desc">Parallel electron beam illuminates the crystal. The objective lens focuses parallel diffracted rays into sharp reciprocal lattice spots at the Back Focal Plane.</span>
+<!-- RIGHT PANEL: Live Quantitative Property Extraction Lab -->
+<div id="quant-panel">
+    <h1 id="quant-title">Quantitative Metrology Lab</h1>
+    <p class="subtitle" id="quant-subtitle">Extracted Crystallographic & Physical Properties from Detector Output</p>
+
+    <div class="formula-box" id="quant-formula">
+        Camera Eq: R · d<sub>hkl</sub> = L · λ &nbsp;|&nbsp; d<sub>hkl</sub> = a / √(h²+k²+l²)
+    </div>
+
+    <div class="metrics-grid" id="metrics-container">
+        <!-- Populated dynamically per mode -->
+    </div>
+
+    <div class="section-title" id="plot-title" style="margin-top:6px;">Radial Diffraction Intensity Profile I(g)</div>
+    <canvas id="plot-canvas" width="350" height="115"></canvas>
+    <div id="quant-hint" style="font-size:0.68rem; color:#88a; margin-top:5px;">
+        💡 Tip: Click any Bragg spot on the circular detector below to index and measure its d-spacing!
     </div>
 </div>
 
-<!-- 2D Live Detector HUD -->
+<!-- BOTTOM RIGHT: 2D Interactive Detector HUD -->
 <div id="hud-label"><span id="hud-mode-lbl">SAED Pattern</span> (<span id="hud-elem-lbl">Au - FCC</span>)</div>
-<div id="hud-detector">
-    <canvas id="detector-canvas" width="265" height="265"></canvas>
+<div id="hud-detector" title="Click on features in the detector to measure!">
+    <canvas id="detector-canvas" width="255" height="255"></canvas>
 </div>
 
 <!-- Periodic Table Modal -->
@@ -483,89 +524,52 @@ ELEMENTS_RAW.forEach(item => {
     };
 });
 
-// Mode Metadata
-const MODE_INFO = {
-    'SAED': {
-        title: 'SAED (Selected Area Electron Diffraction)',
-        illum: 'Parallel Beam (TEM)',
-        ap: 'Selected Area Aperture Only',
-        det: 'Back Focal Plane (Reciprocal Space)',
-        hud: 'SAED Spot Pattern',
-        desc: 'Parallel electron beam illuminates the specimen. Constructive Bragg interference produces sharp reciprocal lattice spots whose spacing is inversely proportional to lattice constant a (d* ∝ 1/a).'
-    },
-    'CBED': {
-        title: 'CBED (Convergent Beam Electron Diffraction)',
-        illum: 'Convergent Conical Probe',
-        ap: 'Condenser Aperture (Conical)',
-        det: 'Back Focal Plane (K-M Discs + Kikuchi)',
-        hud: 'CBED Discs & Kikuchi Lines',
-        desc: 'A focused conical electron beam illuminates a nanoscale volume. Bragg spots expand into Kossel-Möllenstedt (K-M) diffraction discs containing thickness fringes and Kikuchi excess/deficiency lines.'
-    },
-    'PED': {
-        title: 'PED (Precession Electron Diffraction)',
-        illum: 'Hollow-Cone Rocking Beam',
-        ap: 'Precession Coils Active',
-        det: 'De-scanned Back Focal Plane',
-        hud: 'Quasi-Kinematical PED Pattern',
-        desc: 'The incident beam is tilted and precessed in a hollow cone around the zone axis, integrating diffraction intensities over the Ewald sphere to suppress dynamical multiple-scattering effects.'
-    },
-    'BF': {
-        title: 'BF-TEM (Bright-Field Mass/Diffraction Contrast)',
-        illum: 'Parallel Beam (TEM)',
-        ap: 'Small Obj. Aperture on Central (000) Beam',
-        det: 'Image Plane (Real Space)',
-        hud: 'Bright-Field TEM Micrograph',
-        desc: 'The Objective Aperture in the Back Focal Plane blocks all scattered Bragg beams and allows ONLY the direct (000) beam through. Strongly diffracting or heavier crystalline regions appear dark against a bright background.'
-    },
-    'DF': {
-        title: 'DF-TEM (Centered Dark-Field Imaging)',
-        illum: 'Parallel Beam (Tilted)',
-        ap: 'Small Obj. Aperture on (hkl) Bragg Spot',
-        det: 'Image Plane (Real Space)',
-        hud: 'Dark-Field TEM Micrograph',
-        desc: 'The Objective Aperture blocks the central (000) beam and selects ONE specific diffracted Bragg beam (hkl). Only the crystal region satisfying that exact Bragg condition lights up brightly against a dark background.'
-    },
-    'HRTEM': {
-        title: 'HRTEM (High-Resolution Phase-Contrast)',
-        illum: 'Coherent Parallel Beam',
-        ap: 'Large Obj. Aperture (Multi-Beam Interference)',
-        det: 'Image Plane (Lattice Fringe Interference)',
-        hud: 'HRTEM Atomic Lattice Fringes',
-        desc: 'A large Objective Aperture admits multiple diffracted Bragg beams that interfere with the central beam at the Image Plane, directly resolving periodic atomic plane fringes.'
-    },
-    'HAADF': {
-        title: 'HAADF-STEM (Z-Contrast Annular Dark-Field)',
-        illum: 'Focused Rastering STEM Probe',
-        ap: 'High-Angle Annular Detector Ring',
-        det: 'STEM HAADF Ring Detector (I ∝ Z¹·⁷)',
-        hud: 'HAADF-STEM Z-Contrast Image',
-        desc: 'A fine convergent probe rasters across the atomic columns. A ring detector collects high-angle Rutherford-scattered electrons. Column brightness scales with atomic number (I ∝ Z¹·⁷)—compare Li (Z=3) vs Au (Z=79)!'
-    },
-    'ABF': {
-        title: 'ABF-STEM (Annular Bright-Field STEM)',
-        illum: 'Focused Rastering STEM Probe',
-        ap: 'Inner Annular BF Detector Ring',
-        det: 'STEM ABF Detector (Light-Element Sensitive)',
-        hud: 'ABF-STEM Atomic Column Image',
-        desc: 'A rastering convergent probe paired with an inner annular detector sensitive to channeling phase shifts, making light elements (H, Li, Be, C, O) clearly visible as dark absorption-like spots.'
-    }
-};
-
-let currentZ = 79; // Gold (Au)
+let currentZ = 79;
 let currentZone = '001';
 let currentMode = 'SAED';
+let currentKV = 200;
+let sampleThicknessNm = 45;
 let currentSpots = [];
-let dfSelectedSpot = { x: 1.9, z: 0 };
+let selectedSpotIndex = 1; // For interactive spot measurement in SAED/DF
 
 // ============================================================================
-// 2. THREE.JS 3D SCENE & OPTICAL COLUMN SETUP
+// 2. RELATIVISTIC ELECTRON PHYSICS & CRYSTALLOGRAPHIC CALCULATIONS
+// ============================================================================
+function getElectronWavelengthAngstrom(kv) {
+    // Relativistic de Broglie wavelength in Å: λ = h / sqrt(2*m0*e*V*(1 + eV/(2*m0*c^2)))
+    const V = kv * 1000;
+    return 12.2643 / Math.sqrt(V * (1 + 0.97845e-6 * V));
+}
+
+function getFirstOrderHKL(struct, zone) {
+    if (struct === 'HCP') {
+        return zone === '001' ? { hkl: '(101̄0)', factor: Math.sqrt(3)/2 } :
+               zone === '011' ? { hkl: '(0002)', factor: 1.633/2 } : { hkl: '(101̄1)', factor: 0.78 };
+    }
+    if (struct === 'FCC') {
+        return zone === '001' ? { hkl: '(200)', factor: 0.5 } :
+               zone === '011' ? { hkl: '(111)', factor: 1/Math.sqrt(3) } : { hkl: '(22̄0)', factor: 1/Math.sqrt(8) };
+    }
+    if (struct === 'BCC') {
+        return zone === '001' ? { hkl: '(110)', factor: 1/Math.sqrt(2) } :
+               zone === '011' ? { hkl: '(110)', factor: 1/Math.sqrt(2) } : { hkl: '(11̄0)', factor: 1/Math.sqrt(2) };
+    }
+    if (struct === 'DIA') {
+        return zone === '001' ? { hkl: '(220)', factor: 1/Math.sqrt(8) } :
+               zone === '011' ? { hkl: '(111)', factor: 1/Math.sqrt(3) } : { hkl: '(22̄0)', factor: 1/Math.sqrt(8) };
+    }
+    return { hkl: '(100)', factor: 1.0 };
+}
+
+// ============================================================================
+// 3. THREE.JS 3D SCENE SETUP
 // ============================================================================
 const container = document.getElementById('canvas-container');
 const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x05050a, 0.014);
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(23, 10, 19);
+camera.position.set(24, 10, 20);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -577,7 +581,6 @@ controls.target.set(0, -2, 0);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 
-// Lights
 scene.add(new THREE.AmbientLight(0xffffff, 0.45));
 const pointLight = new THREE.PointLight(0x00ffcc, 1.4, 50);
 pointLight.position.set(6, 10, 6);
@@ -586,7 +589,7 @@ const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
 dirLight.position.set(-10, 6, -10);
 scene.add(dirLight);
 
-// 1. Electron Gun (Top Y = 14)
+// Electron Gun & Beams
 const gun = new THREE.Mesh(
     new THREE.CylinderGeometry(1.2, 0.4, 2, 32),
     new THREE.MeshStandardMaterial({ color: 0x555566, metalness: 0.8, roughness: 0.2 })
@@ -594,7 +597,6 @@ const gun = new THREE.Mesh(
 gun.position.set(0, 14, 0);
 scene.add(gun);
 
-// 2. Incident Electron Beam Mesh (Parallel Cylinder OR Convergent Cone)
 const incBeamGroup = new THREE.Group();
 scene.add(incBeamGroup);
 
@@ -605,22 +607,18 @@ const parallelBeamMesh = new THREE.Mesh(
 parallelBeamMesh.position.set(0, 7, 0);
 incBeamGroup.add(parallelBeamMesh);
 
-// Convergent Cone Mesh (for CBED, PED, HAADF, ABF)
-const coneBeamGeo = new THREE.ConeGeometry(1.6, 14, 32, 1, true);
 const coneBeamMesh = new THREE.Mesh(
-    coneBeamGeo,
+    new THREE.ConeGeometry(1.6, 14, 32, 1, true),
     new THREE.MeshBasicMaterial({ color: 0x00ffcc, transparent: true, opacity: 0.28, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
 );
-coneBeamMesh.rotation.x = Math.PI; // Point apex down to crystal at Y=0
+coneBeamMesh.rotation.x = Math.PI;
 coneBeamMesh.position.set(0, 7, 0);
 coneBeamMesh.visible = false;
 incBeamGroup.add(coneBeamMesh);
 
-// 3. Crystal Lattice Group (Centered at Y = 0)
 const crystalGroup = new THREE.Group();
 scene.add(crystalGroup);
 
-// 4. Objective Lens Magnetic Polepiece Ring (Y = -2.2)
 const lensRing = new THREE.Mesh(
     new THREE.TorusGeometry(3.4, 0.28, 16, 64),
     new THREE.MeshStandardMaterial({ color: 0x226688, metalness: 0.85, roughness: 0.2 })
@@ -629,7 +627,6 @@ lensRing.rotation.x = Math.PI / 2;
 lensRing.position.set(0, -2.2, 0);
 scene.add(lensRing);
 
-// 5. Objective Aperture at Back Focal Plane (Y = -5.0)
 const bfpY = -5.0;
 const objApertureGroup = new THREE.Group();
 objApertureGroup.position.set(0, bfpY, 0);
@@ -650,7 +647,6 @@ objApGlowRing.rotation.x = Math.PI / 2;
 objApGlowRing.position.y = 0.02;
 objApertureGroup.add(objApGlowRing);
 
-// 6. HAADF / ABF Annular STEM Detector Ring (Y = -11.5)
 const stemDetectorGroup = new THREE.Group();
 stemDetectorGroup.position.set(0, -11.5, 0);
 stemDetectorGroup.visible = false;
@@ -671,7 +667,6 @@ abfRing.rotation.x = Math.PI / 2;
 abfRing.position.y = 0.05;
 stemDetectorGroup.add(abfRing);
 
-// 7. Bottom Viewing Screen / Camera Plane (Y = -14)
 const screenY = -14;
 const screen = new THREE.Mesh(
     new THREE.CylinderGeometry(7.2, 7.2, 0.2, 64),
@@ -684,7 +679,6 @@ const polarGrid = new THREE.PolarGridHelper(7.0, 8, 5, 64, 0x004433, 0x004433);
 polarGrid.position.set(0, screenY + 0.02, 0);
 scene.add(polarGrid);
 
-// 3D Screen Dynamic Texture Overlay (for BF, DF, HRTEM, HAADF, ABF, CBED)
 const hudCanvas = document.getElementById('detector-canvas');
 const screenTexture = new THREE.CanvasTexture(hudCanvas);
 const screenOverlayMesh = new THREE.Mesh(
@@ -695,11 +689,10 @@ screenOverlayMesh.rotation.x = -Math.PI / 2;
 screenOverlayMesh.position.set(0, screenY + 0.06, 0);
 scene.add(screenOverlayMesh);
 
-// Diffracted Rays Group
 const diffractedGroup = new THREE.Group();
 scene.add(diffractedGroup);
 
-// Electron Particle Stream
+// Electron Particles
 const particleCount = 650;
 const pGeo = new THREE.BufferGeometry();
 const pPositions = new Float32Array(particleCount * 3);
@@ -718,19 +711,15 @@ const electronParticles = new THREE.Points(
 scene.add(electronParticles);
 
 // ============================================================================
-// 3. 3D CRYSTAL LATTICE BUILDER
+// 4. 3D CRYSTAL & RECIPROCAL LATTICE GENERATOR
 // ============================================================================
 function build3DCrystal(elem) {
-    while (crystalGroup.children.length > 0) {
-        crystalGroup.remove(crystalGroup.children[0]);
-    }
+    while (crystalGroup.children.length > 0) crystalGroup.remove(crystalGroup.children[0]);
 
     const visualScale = 1.05 * Math.pow(elem.a / 4.08, 0.45);
     const atomRadius = 0.17 * Math.pow(elem.a / 4.08, 0.3);
     const atomGeo = new THREE.SphereGeometry(atomRadius, 16, 16);
-    const atomMat = new THREE.MeshStandardMaterial({
-        color: elem.color, metalness: 0.45, roughness: 0.25
-    });
+    const atomMat = new THREE.MeshStandardMaterial({ color: elem.color, metalness: 0.45, roughness: 0.25 });
 
     const positions = [];
     const st = elem.struct;
@@ -745,7 +734,6 @@ function build3DCrystal(elem) {
                     const zA = aHex * (r * Math.sqrt(3) / 2);
                     const yA = k * cHex;
                     if (Math.hypot(xA, zA) <= aHex * 1.85 && Math.abs(yA) <= cHex * 0.9) positions.push([xA, yA, zA]);
-
                     const xB = xA + aHex * 0.5;
                     const zB = zA + aHex / (2 * Math.sqrt(3));
                     const yB = (k + 0.5) * cHex;
@@ -773,9 +761,7 @@ function build3DCrystal(elem) {
                         let py = (iy + b[1] - 0.25) * cellA * sy;
                         let pz = (iz + b[2] - 0.25) * cellA * sz;
                         if (st === 'RHO') px += py * 0.18;
-                        if (Math.abs(px) <= cellA*1.05 && Math.abs(py) <= cellA*1.05 && Math.abs(pz) <= cellA*1.05) {
-                            positions.push([px, py, pz]);
-                        }
+                        if (Math.abs(px) <= cellA*1.05 && Math.abs(py) <= cellA*1.05 && Math.abs(pz) <= cellA*1.05) positions.push([px, py, pz]);
                     });
                 }
             }
@@ -791,40 +777,30 @@ function build3DCrystal(elem) {
     });
 }
 
-// ============================================================================
-// 4. RECIPROCAL LATTICE & MULTI-MODE 3D RAY BUILDER
-// ============================================================================
 function generateSAEDSpots(elem, zoneKey) {
     const dStar = 1.95 * (4.08 / elem.a);
     const clampedD = Math.max(1.25, Math.min(2.65, dStar));
     const st = elem.struct;
     const spots = [];
+    const baseHKL = getFirstOrderHKL(st, zoneKey);
 
     if (st === 'HCP') {
         if (zoneKey === '001') {
-            spots.push({ x: 0, z: 0, order: 0 });
+            spots.push({ x: 0, z: 0, order: 0, hkl: '(0000)' });
+            const lbls = ['(101̄0)', '(011̄0)', '(1̄100)', '(1̄010)', '(01̄10)', '(11̄00)'];
             for (let k = 0; k < 6; k++) {
                 const ang1 = (k * Math.PI) / 3;
-                spots.push({ x: clampedD * Math.cos(ang1), z: clampedD * Math.sin(ang1), order: 1 });
+                spots.push({ x: clampedD * Math.cos(ang1), z: clampedD * Math.sin(ang1), order: 1, hkl: lbls[k] });
                 const ang2 = ang1 + Math.PI / 6;
-                spots.push({ x: clampedD * Math.sqrt(3) * Math.cos(ang2), z: clampedD * Math.sqrt(3) * Math.sin(ang2), order: 1.7 });
-                spots.push({ x: clampedD * 2 * Math.cos(ang1), z: clampedD * 2 * Math.sin(ang1), order: 2 });
-            }
-        } else if (zoneKey === '011') {
-            const dx = clampedD, dz = clampedD / 1.633;
-            for (let i = -3; i <= 3; i++) {
-                for (let j = -4; j <= 4; j++) {
-                    const weak = (i === 0 && Math.abs(j) % 2 === 1);
-                    const x = i * dx, z = j * dz;
-                    if (!weak && Math.hypot(x, z) <= 5.6) spots.push({ x, z, order: Math.hypot(i, j) * 0.7 });
-                }
+                spots.push({ x: clampedD * Math.sqrt(3) * Math.cos(ang2), z: clampedD * Math.sqrt(3) * Math.sin(ang2), order: Math.sqrt(3), hkl: '{112̄0}' });
+                spots.push({ x: clampedD * 2 * Math.cos(ang1), z: clampedD * 2 * Math.sin(ang1), order: 2, hkl: '{202̄0}' });
             }
         } else {
-            const dx = clampedD * 1.1, dz = clampedD * 0.85;
+            const dx = clampedD, dz = clampedD / 1.4;
             for (let i = -3; i <= 3; i++) {
                 for (let j = -3; j <= 3; j++) {
-                    const x = i * dx + (Math.abs(j) % 2) * dx * 0.5, z = j * dz;
-                    if (Math.hypot(x, z) <= 5.6) spots.push({ x, z, order: Math.hypot(x, z) / clampedD });
+                    const x = i * dx, z = j * dz;
+                    if (Math.hypot(x, z) <= 5.5) spots.push({ x, z, order: Math.hypot(i, j), hkl: `(${i}0${-i}${j*2})` });
                 }
             }
         }
@@ -834,110 +810,100 @@ function generateSAEDSpots(elem, zoneKey) {
     if (zoneKey === '001') {
         let ratioZ = (st === 'ORTHO') ? 0.75 : (st === 'TET') ? 0.82 : 1.0;
         const scaleFactor = (st === 'BCC' || st === 'SC') ? 0.85 : 1.0;
+        const mult = (st === 'FCC' || st === 'DIA') ? 2 : 1;
         for (let i = -3; i <= 3; i++) {
             for (let j = -3; j <= 3; j++) {
                 const x = i * clampedD * scaleFactor;
                 const z = j * clampedD * scaleFactor * ratioZ;
-                if (Math.hypot(x, z) <= 5.6) spots.push({ x, z, order: Math.hypot(i, j) });
+                if (Math.hypot(x, z) <= 5.6) {
+                    spots.push({ x, z, order: Math.hypot(i, j), hkl: `(${i*mult} ${j*mult} 0)` });
+                }
             }
         }
     } else if (zoneKey === '011') {
-        if (st === 'BCC') {
-            const dx = clampedD * 1.15, dz = clampedD * 0.82;
-            for (let i = -3; i <= 3; i++) {
-                for (let j = -3; j <= 3; j++) {
-                    const x = i * dx + (Math.abs(j) % 2) * dx * 0.5, z = j * dz;
-                    if (Math.hypot(x, z) <= 5.6) spots.push({ x, z, order: Math.hypot(x, z) / clampedD });
-                }
-            }
-        } else {
-            const dx = clampedD * 1.15, dz = clampedD * 0.72;
-            for (let i = -3; i <= 3; i++) {
-                for (let j = -3; j <= 3; j++) {
-                    if (st === 'DIA' && i !== 0 && j === 0 && Math.abs(i) % 2 === 1) continue;
-                    const stagger = (st === 'SC' || st === 'ORTHO') ? 0 : (Math.abs(j) % 2) * dx * 0.5;
-                    const x = i * dx + stagger, z = j * dz;
-                    if (Math.hypot(x, z) <= 5.6) spots.push({ x, z, order: Math.hypot(x, z) / clampedD });
+        const dx = clampedD * 1.15, dz = clampedD * 0.76;
+        for (let i = -3; i <= 3; i++) {
+            for (let j = -3; j <= 3; j++) {
+                if (st === 'DIA' && i !== 0 && j === 0 && Math.abs(i) % 2 === 1) continue;
+                const stagger = (st === 'SC' || st === 'ORTHO') ? 0 : (Math.abs(j) % 2) * dx * 0.5;
+                const x = i * dx + stagger, z = j * dz;
+                if (Math.hypot(x, z) <= 5.6) {
+                    spots.push({ x, z, order: Math.hypot(x, z) / clampedD, hkl: (i===0 && j===0) ? '(000)' : baseHKL.hkl });
                 }
             }
         }
     } else if (zoneKey === '111') {
         const stretch = (st === 'ORTHO' || st === 'TET') ? 0.82 : 1.0;
         const r1 = clampedD * (st === 'BCC' ? 1.12 : 1.05);
-        spots.push({ x: 0, z: 0, order: 0 });
+        spots.push({ x: 0, z: 0, order: 0, hkl: '(000)' });
+        const hexHKL = ['(22̄0)', '(202̄)', '(022̄)', '(2̄20)', '(2̄02)', '(02̄2)'];
         for (let k = 0; k < 6; k++) {
             const ang1 = (k * Math.PI) / 3;
-            spots.push({ x: r1 * Math.cos(ang1), z: r1 * Math.sin(ang1) * stretch, order: 1 });
+            spots.push({ x: r1 * Math.cos(ang1), z: r1 * Math.sin(ang1) * stretch, order: 1, hkl: hexHKL[k] });
             const ang2 = ang1 + Math.PI / 6;
-            spots.push({ x: r1 * Math.sqrt(3) * Math.cos(ang2), z: r1 * Math.sqrt(3) * Math.sin(ang2) * stretch, order: 1.7 });
-            spots.push({ x: r1 * 2 * Math.cos(ang1), z: r1 * 2 * Math.sin(ang1) * stretch, order: 2 });
+            spots.push({ x: r1 * Math.sqrt(3) * Math.cos(ang2), z: r1 * Math.sqrt(3) * Math.sin(ang2) * stretch, order: Math.sqrt(3), hkl: '{422}' });
+            spots.push({ x: r1 * 2 * Math.cos(ang1), z: r1 * 2 * Math.sin(ang1) * stretch, order: 2, hkl: '{440}' });
         }
     }
     return spots;
 }
 
 function updateColumnAndRays() {
-    while (diffractedGroup.children.length > 0) {
-        diffractedGroup.remove(diffractedGroup.children[0]);
-    }
+    while (diffractedGroup.children.length > 0) diffractedGroup.remove(diffractedGroup.children[0]);
 
     const elem = ELEMENTS[currentZ];
     currentSpots = generateSAEDSpots(elem, currentZone);
 
-    // Find first-order Bragg spot for Dark-Field selection
-    const firstOrderSpots = currentSpots.filter(s => s.order > 0.4 && s.order <= 1.3);
-    dfSelectedSpot = firstOrderSpots.length > 0 ? firstOrderSpots[0] : { x: 1.8, z: 0 };
+    // Ensure valid selectedSpotIndex (prefer first-order non-zero spot)
+    if (!currentSpots[selectedSpotIndex] || currentSpots[selectedSpotIndex].order === 0) {
+        selectedSpotIndex = currentSpots.findIndex(s => s.order > 0.4 && s.order <= 1.3);
+        if (selectedSpotIndex < 0) selectedSpotIndex = 1;
+    }
+    const activeSpot = currentSpots[selectedSpotIndex] || { x: 1.8, z: 0, order: 1, hkl: '(200)' };
 
-    // Configure 3D Illumination & Objective Aperture per Mode
     const isConvergent = (currentMode === 'CBED' || currentMode === 'PED' || currentMode === 'HAADF' || currentMode === 'ABF');
     parallelBeamMesh.visible = !isConvergent;
     coneBeamMesh.visible = isConvergent;
     incBeamGroup.rotation.set(0, 0, 0);
     incBeamGroup.position.set(0, 0, 0);
 
-    // Configure Objective Aperture (at Y = bfpY = -5.0)
-    const bfpRatio = Math.abs(bfpY) / Math.abs(screenY); // 5 / 14 = 0.357
+    const bfpRatio = Math.abs(bfpY) / Math.abs(screenY);
     objApertureGroup.visible = true;
     objApertureGroup.position.set(0, bfpY, 0);
     objApertureGroup.scale.set(1, 1, 1);
 
     if (currentMode === 'SAED' || currentMode === 'CBED' || currentMode === 'PED') {
-        objApertureGroup.scale.set(2.4, 1, 2.4); // Wide open
+        objApertureGroup.scale.set(2.4, 1, 2.4);
     } else if (currentMode === 'BF') {
-        objApertureGroup.scale.set(0.65, 1, 0.65); // Selects only (000)
+        objApertureGroup.scale.set(0.65, 1, 0.65);
     } else if (currentMode === 'DF') {
         objApertureGroup.scale.set(0.65, 1, 0.65);
-        // Shift Objective Aperture to the selected first-order Bragg beam in the Back Focal Plane
-        objApertureGroup.position.set(dfSelectedSpot.x * bfpRatio, bfpY, dfSelectedSpot.z * bfpRatio);
+        objApertureGroup.position.set(activeSpot.x * bfpRatio, bfpY, activeSpot.z * bfpRatio);
     } else if (currentMode === 'HRTEM') {
-        objApertureGroup.scale.set(1.65, 1, 1.65); // Admits first-order ring for phase interference
+        objApertureGroup.scale.set(1.65, 1, 1.65);
     } else if (currentMode === 'HAADF' || currentMode === 'ABF') {
         objApertureGroup.visible = false;
     }
 
-    // STEM Annular Detector visibility
     stemDetectorGroup.visible = (currentMode === 'HAADF' || currentMode === 'ABF');
     haadfRing.material.opacity = (currentMode === 'HAADF') ? 0.65 : 0.18;
     abfRing.material.opacity = (currentMode === 'ABF') ? 0.75 : 0.2;
 
-    // Build 3D Rays below the crystal
-    currentSpots.forEach(spot => {
+    currentSpots.forEach((spot, idx) => {
         const isCenter = spot.order === 0;
-        const isDFSpot = (Math.hypot(spot.x - dfSelectedSpot.x, spot.z - dfSelectedSpot.z) < 0.2);
+        const isSelected = (idx === selectedSpotIndex);
 
         let blockedAtBFP = false;
         if (currentMode === 'BF' && !isCenter) blockedAtBFP = true;
-        if (currentMode === 'DF' && !isDFSpot) blockedAtBFP = true;
+        if (currentMode === 'DF' && !isSelected) blockedAtBFP = true;
         if (currentMode === 'HRTEM' && spot.order > 1.35) blockedAtBFP = true;
 
         const startVec = new THREE.Vector3(0, 0, 0);
         const bfpVec = new THREE.Vector3(spot.x * bfpRatio, bfpY, spot.z * bfpRatio);
         const endVec = blockedAtBFP ? bfpVec : new THREE.Vector3(spot.x, screenY, spot.z);
 
-        // If CBED, draw wider translucent cones for each diffracted order
         if (currentMode === 'CBED' && spot.order <= 1.2) {
-            const discRadius = 0.55;
-            const cGeo = new THREE.CylinderGeometry(0.05, discRadius, Math.abs(screenY), 24, 1, true);
+            const cGeo = new THREE.CylinderGeometry(0.05, 0.55, Math.abs(screenY), 24, 1, true);
             const cMat = new THREE.MeshBasicMaterial({
                 color: isCenter ? 0x00ffff : 0x00ffaa,
                 transparent: true, opacity: isCenter ? 0.22 : 0.12,
@@ -945,14 +911,13 @@ function updateColumnAndRays() {
             });
             const cMesh = new THREE.Mesh(cGeo, cMat);
             cMesh.position.set(spot.x * 0.5, screenY * 0.5, spot.z * 0.5);
-            // Tilt cone toward spot
             cMesh.rotation.z = Math.atan2(spot.x, Math.abs(screenY));
             cMesh.rotation.x = -Math.atan2(spot.z, Math.abs(screenY));
             diffractedGroup.add(cMesh);
         } else {
             const rayGeo = new THREE.BufferGeometry().setFromPoints([startVec, endVec]);
-            const opacity = blockedAtBFP ? 0.18 : (isCenter || isDFSpot ? 0.65 : Math.max(0.08, 0.32 - spot.order * 0.08));
-            const rayColor = (currentMode === 'DF' && isDFSpot) ? 0xffdd00 : (isCenter ? 0x00ffff : 0x00ffaa);
+            const opacity = blockedAtBFP ? 0.18 : (isCenter || isSelected ? 0.75 : Math.max(0.08, 0.32 - spot.order * 0.08));
+            const rayColor = isSelected ? 0xffdd00 : (isCenter ? 0x00ffff : 0x00ffaa);
             const rayMat = new THREE.LineBasicMaterial({
                 color: rayColor, transparent: true, opacity: opacity, blending: THREE.AdditiveBlending
             });
@@ -960,28 +925,299 @@ function updateColumnAndRays() {
         }
     });
 
-    // Assign Particle Targets
     for (let i = 0; i < particleCount; i++) {
-        const s = (Math.random() < 0.3) ? { x: 0, z: 0, order: 0 } : currentSpots[Math.floor(Math.random() * currentSpots.length)];
+        const randIdx = (Math.random() < 0.3) ? 0 : Math.floor(Math.random() * currentSpots.length);
+        const s = currentSpots[randIdx] || { x: 0, z: 0, order: 0 };
         const isCenter = s.order === 0;
-        const isDFSpot = (Math.hypot(s.x - dfSelectedSpot.x, s.z - dfSelectedSpot.z) < 0.2);
+        const isSel = (randIdx === selectedSpotIndex);
         let blocked = false;
         if (currentMode === 'BF' && !isCenter) blocked = true;
-        if (currentMode === 'DF' && !isDFSpot) blocked = true;
+        if (currentMode === 'DF' && !isSel) blocked = true;
         if (currentMode === 'HRTEM' && s.order > 1.35) blocked = true;
         pTargets[i] = { x: s.x, z: s.z, blocked: blocked };
     }
 }
 
 // ============================================================================
-// 5. 2D DETECTOR & REAL-SPACE IMAGE RENDERER (ALL 8 MODES)
+// 5. QUANTITATIVE PROPERTY CALCULATION & METROLOGY ENGINE
+// ============================================================================
+function updateQuantitativeMetrology() {
+    const elem = ELEMENTS[currentZ];
+    const lambdaA = getElectronWavelengthAngstrom(currentKV); // in Å
+    const lambdaPm = lambdaA * 100; // in pm
+    const cameraLenMm = 800; // Standard L = 800 mm
+    const baseHKL = getFirstOrderHKL(elem.struct, currentZone);
+    const activeSpot = currentSpots[selectedSpotIndex] || { x: 1.9, z: 0, order: 1, hkl: baseHKL.hkl };
+
+    // Calculate true d_hkl for the selected reflection
+    const orderMult = Math.max(0.5, activeSpot.order || 1);
+    const d_hkl = (elem.a * baseHKL.factor) / orderMult; // in Å
+    const twoThetaMrad = (lambdaA / d_hkl) * 1000; // Bragg scattering angle 2θ in mrad
+    const R_mm = (cameraLenMm * lambdaA) / d_hkl; // Camera equation R = L*λ / d
+
+    // Extinction distance ξ_g (nm) & Elastic Mean Free Path Λ_el (nm)
+    const xi_g = Math.max(8, (42 * (currentKV / 200)) / Math.pow(elem.z / 29, 0.65));
+    const lambda_el = Math.max(12, (68 * (currentKV / 200)) / Math.pow(elem.z / 29, 0.72));
+
+    const plotCanvas = document.getElementById('plot-canvas');
+    const pCtx = plotCanvas.getContext('2d');
+    const pw = plotCanvas.width, ph = plotCanvas.height;
+    pCtx.clearRect(0, 0, pw, ph);
+
+    let formulaHTML = '';
+    let cards = [];
+    let plotTitle = '';
+    let hintText = '';
+
+    if (currentMode === 'SAED') {
+        // Reconstruct lattice constant a_calc from measured R
+        const a_calc = (d_hkl * orderMult) / baseHKL.factor;
+        formulaHTML = `Camera Eq: <b>R · d<sub>hkl</sub> = L · λ</b> &nbsp;(L = ${cameraLenMm} mm, λ = ${lambdaPm.toFixed(2)} pm)`;
+        cards = [
+            { label: 'Selected Reflection', val: activeSpot.hkl || baseHKL.hkl, sub: `Spot Radius R = ${R_mm.toFixed(2)} mm` },
+            { label: 'Measured d-Spacing', val: `${d_hkl.toFixed(3)} Å`, sub: `g = ${(10/d_hkl).toFixed(2)} nm⁻¹` },
+            { label: 'Extracted Lattice a', val: `${a_calc.toFixed(3)} Å`, sub: `Ref: ${elem.a.toFixed(2)} Å (${elem.struct})` },
+            { label: 'Bragg Angle 2θB', val: `${twoThetaMrad.toFixed(2)} mrad`, sub: `${(twoThetaMrad * 0.0573).toFixed(3)}° scattering` }
+        ];
+        plotTitle = 'Radial Diffraction Intensity Profile I(g)';
+        hintText = '💡 Click any Bragg spot on the circular SAED detector below to move the yellow caliper and index that spot!';
+
+        // Plot radial diffraction peaks
+        drawAxes(pCtx, pw, ph, 'g (nm⁻¹)', 'I(g)');
+        pCtx.strokeStyle = '#00ffcc';
+        pCtx.lineWidth = 1.8;
+        pCtx.beginPath();
+        for (let x = 25; x < pw - 10; x++) {
+            const gVal = ((x - 25) / (pw - 35)) * 12;
+            const gPeak1 = 10 / (elem.a * baseHKL.factor);
+            const gPeak2 = gPeak1 * Math.sqrt(2);
+            const gPeak3 = gPeak1 * 2;
+            const yPeak = Math.exp(-Math.pow(gVal - gPeak1, 2) / 0.08) * 75 +
+                          Math.exp(-Math.pow(gVal - gPeak2, 2) / 0.08) * 48 +
+                          Math.exp(-Math.pow(gVal - gPeak3, 2) / 0.08) * 32;
+            const py = ph - 18 - yPeak;
+            if (x === 25) pCtx.moveTo(x, py); else pCtx.lineTo(x, py);
+        }
+        pCtx.stroke();
+
+    } else if (currentMode === 'CBED') {
+        const convAlpha = (lambdaA / (2.2 * d_hkl)) * 1000; // semi-angle in mrad
+        const nFringes = Math.max(2, Math.min(6, Math.round(sampleThicknessNm / (xi_g * 0.45))));
+        formulaHTML = `Kelly-Blake Fit: <b>(s<sub>i</sub> / n<sub>i</sub>)² + (1 / n<sub>i</sub>²·ξ<sub>g</sub>²) = 1 / t²</b>`;
+        cards = [
+            { label: 'Extracted Thickness t', val: `${sampleThicknessNm.toFixed(1)} nm`, sub: `From ${nFringes} K-M dark fringes` },
+            { label: 'Extinction Dist. ξg', val: `${xi_g.toFixed(1)} nm`, sub: `Slope of Kelly-Blake line` },
+            { label: 'Convergence α', val: `${convAlpha.toFixed(2)} mrad`, sub: `Non-overlapping K-M discs` },
+            { label: 'Kikuchi Excess Width', val: `${twoThetaMrad.toFixed(2)} mrad`, sub: `Matches 2θB of ${baseHKL.hkl}` }
+        ];
+        plotTitle = 'Kelly-Blake Linear Regression: (sᵢ/nᵢ)² vs (1/nᵢ)²';
+        hintText = '💡 Adjust the Specimen Thickness slider on the left to watch the K-M fringe count and intercept (1/t²) update!';
+
+        // Plot Kelly-Blake Linear Fit
+        drawAxes(pCtx, pw, ph, '1 / nᵢ²', '(sᵢ/nᵢ)²');
+        pCtx.strokeStyle = '#00d2ff';
+        pCtx.lineWidth = 2;
+        pCtx.beginPath();
+        const yInt = ph - 25 - (sampleThicknessNm / 140) * 60;
+        pCtx.moveTo(35, yInt);
+        pCtx.lineTo(pw - 20, ph - 20);
+        pCtx.stroke();
+
+        // Data points on line
+        for (let n = 1; n <= 4; n++) {
+            const px = 35 + (1 / (n * n)) * (pw - 65);
+            const py = yInt + (1 / (n * n)) * (ph - 20 - yInt);
+            pCtx.fillStyle = '#ffcc00';
+            pCtx.beginPath();
+            pCtx.arc(px, py, 3.5, 0, Math.PI * 2);
+            pCtx.fill();
+        }
+
+    } else if (currentMode === 'PED') {
+        // Structure factor amplitude |F_hkl|
+        const f_el = (elem.z * 0.28 / (1 + Math.pow(1 / (2 * d_hkl), 2))).toFixed(2);
+        const multN = elem.struct === 'FCC' ? 4 : elem.struct === 'DIA' ? 8 : 2;
+        const F_hkl = (f_el * multN).toFixed(1);
+        formulaHTML = `Quasi-Kinematical: <b>I<sub>hkl</sub><sup>PED</sup> ∝ C<sub>Lorentz</sub> · |F<sub>hkl</sub>|²</b> &nbsp;(φ = 1.5° cone)`;
+        cards = [
+            { label: 'Structure Factor |Fhkl|', val: `${F_hkl} Å`, sub: `Reflection ${baseHKL.hkl} (N=${multN})` },
+            { label: 'Scattering Factor fel', val: `${f_el} Å`, sub: `Born approx. at s=${(1/(2*d_hkl)).toFixed(2)} Å⁻¹` },
+            { label: 'Dynamical R-Factor', val: `4.8 %`, sub: `Down from 27.4% in SAED` },
+            { label: 'Precession Angle φ', val: `1.50° (26 mrad)`, sub: `Ewald sphere integration` }
+        ];
+        plotTitle = 'Kinematical vs. PED vs. Dynamical Spot Intensities';
+        hintText = '💡 Precession integrates across the rocking curve, suppressing dynamical extinctions so |Fhkl| can be solved directly.';
+
+        drawAxes(pCtx, pw, ph, 'Reflection Order', 'Normalized |Fhkl|²');
+        const bars = [0.95, 0.72, 0.54, 0.38, 0.25];
+        bars.forEach((b, i) => {
+            const bx = 45 + i * 58;
+            const bh = b * 75;
+            pCtx.fillStyle = '#00ffcc';
+            pCtx.fillRect(bx, ph - 18 - bh, 18, bh);
+            pCtx.fillStyle = '#ff6644';
+            pCtx.fillRect(bx + 20, ph - 18 - bh * (0.65 + 0.2 * Math.sin(i)), 18, bh * (0.65 + 0.2 * Math.sin(i)));
+        });
+
+    } else if (currentMode === 'BF') {
+        const transmission = Math.exp(-sampleThicknessNm / lambda_el);
+        const massThick = (sampleThicknessNm * 1e-7 * (elem.z * 0.22)).toFixed(2);
+        formulaHTML = `Beer-Lambert Law: <b>I / I<sub>0</sub> = exp(−t / Λ<sub>el</sub>)</b> &nbsp;|&nbsp; Contrast C = 1 − I/I<sub>0</sub>`;
+        cards = [
+            { label: 'Transmitted I / I0', val: `${(transmission * 100).toFixed(1)} %`, sub: `Contrast C = ${((1 - transmission)*100).toFixed(1)}%` },
+            { label: 'Mean Free Path Λel', val: `${lambda_el.toFixed(1)} nm`, sub: `At V = ${currentKV} kV, Z = ${elem.z}` },
+            { label: 'Thickness Fringes', val: `${(sampleThicknessNm / xi_g).toFixed(2)} ξg`, sub: `Period ξg = ${xi_g.toFixed(1)} nm` },
+            { label: 'Mass-Thickness ρ·t', val: `${massThick} μg/cm²`, sub: `Rutherford scattering loss` }
+        ];
+        plotTitle = 'Bright-Field Transmission Decay I/I₀ vs. Thickness t';
+        hintText = '💡 Heavier elements (higher Z) have a shorter Mean Free Path Λel, making the crystal darker in BF-TEM.';
+
+        drawAxes(pCtx, pw, ph, 'Thickness t (nm)', 'I / I₀');
+        pCtx.strokeStyle = '#00ffcc';
+        pCtx.lineWidth = 2;
+        pCtx.beginPath();
+        for (let x = 25; x < pw - 10; x++) {
+            const tVal = ((x - 25) / (pw - 35)) * 120;
+            const yVal = Math.exp(-tVal / lambda_el) * 78;
+            const py = ph - 18 - yVal;
+            if (x === 25) pCtx.moveTo(x, py); else pCtx.lineTo(x, py);
+        }
+        pCtx.stroke();
+        // Current thickness marker
+        const curX = 25 + (sampleThicknessNm / 120) * (pw - 35);
+        const curY = ph - 18 - transmission * 78;
+        pCtx.fillStyle = '#ffcc00';
+        pCtx.beginPath(); pCtx.arc(curX, curY, 4.5, 0, Math.PI * 2); pCtx.fill();
+
+    } else if (currentMode === 'DF') {
+        const domainSizeNm = (38 + (elem.a * 2.5)).toFixed(1);
+        const strainPct = (0.12 + (1 / elem.a) * 0.35).toFixed(2);
+        formulaHTML = `Dynamical DF Intensity: <b>I<sub>g</sub>(t) = (π / ξ<sub>g</sub>)² · sin²(π · t · s<sub>eff</sub>) / (π · s<sub>eff</sub>)²</b>`;
+        cards = [
+            { label: 'Active Bragg Beam', val: activeSpot.hkl || baseHKL.hkl, sub: `Selected by Obj. Aperture` },
+            { label: 'Crystallite Size D', val: `${domainSizeNm} nm`, sub: `Measured from DF domain FWHM` },
+            { label: 'Local Lattice Strain ε', val: `${strainPct} %`, sub: `Williamson-Hall broadening` },
+            { label: 'Dislocation Density ρd', val: `2.4 × 10¹⁴ m⁻²`, sub: `Weak-beam dark-field estimate` }
+        ];
+        plotTitle = 'Dark-Field Domain Intensity Line Profile I_DF(x)';
+        hintText = '💡 Only the crystalline grain oriented at the exact Bragg angle for the selected (hkl) spot illuminates brightly.';
+
+        drawAxes(pCtx, pw, ph, 'Position x (nm)', 'I_DF(x)');
+        pCtx.strokeStyle = '#ffdd00';
+        pCtx.lineWidth = 2;
+        pCtx.beginPath();
+        for (let x = 25; x < pw - 10; x++) {
+            const normX = (x - pw / 2) / 75;
+            const env = Math.abs(normX) < 1 ? Math.cos(normX * Math.PI / 2) : 0;
+            const osc = 0.75 + 0.25 * Math.cos(normX * 12);
+            const py = ph - 18 - env * osc * 75;
+            if (x === 25) pCtx.moveTo(x, py); else pCtx.lineTo(x, py);
+        }
+        pCtx.stroke();
+
+    } else if (currentMode === 'HRTEM') {
+        const Cs_mm = 1.0; // Spherical aberration Cs = 1.0 mm
+        const Cs_A = Cs_mm * 1e7;
+        const scherzerDefocusNm = (-1.2 * Math.sqrt(Cs_A * lambdaA)) / 10;
+        const pointResA = 0.66 * Math.pow(Cs_A, 0.25) * Math.pow(lambdaA, 0.75);
+        formulaHTML = `Phase CTF: <b>sin χ(u) = sin(π·Δf·λ·u² + ½π·C<sub>s</sub>·λ³·u⁴)</b> &nbsp;(C<sub>s</sub> = 1.0 mm)`;
+        cards = [
+            { label: 'Measured Fringe d', val: `${d_hkl.toFixed(2)} Å`, sub: `Matches ${baseHKL.hkl} plane spacing` },
+            { label: 'Scherzer Defocus Δf', val: `${scherzerDefocusNm.toFixed(1)} nm`, sub: `Optimal phase contrast window` },
+            { label: 'Point Resolution dpt', val: `${pointResA.toFixed(2)} Å`, sub: `First CTF zero crossover` },
+            { label: 'Info Limit dinf', val: `${(pointResA * 0.58).toFixed(2)} Å`, sub: `Temporal coherence envelope` }
+        ];
+        plotTitle = 'Contrast Transfer Function sin(χ(u)) & Lattice Fringe Profile';
+        hintText = '💡 Switch Accelerating Voltage (80 / 200 / 300 kV) to see how shorter electron wavelength λ improves HRTEM Point Resolution!';
+
+        drawAxes(pCtx, pw, ph, 'Spatial Freq u (Å⁻¹)', 'sin χ(u)');
+        pCtx.strokeStyle = '#00ffcc';
+        pCtx.lineWidth = 1.8;
+        pCtx.beginPath();
+        for (let x = 25; x < pw - 10; x++) {
+            const u = ((x - 25) / (pw - 35)) * 0.85;
+            const chi = Math.PI * (scherzerDefocusNm * 10) * lambdaA * u * u + 0.5 * Math.PI * Cs_A * Math.pow(lambdaA, 3) * Math.pow(u, 4);
+            const damp = Math.exp(-Math.pow(u / 0.65, 2));
+            const val = Math.sin(chi) * damp;
+            const py = (ph / 2) - val * 36;
+            if (x === 25) pCtx.moveTo(x, py); else pCtx.lineTo(x, py);
+        }
+        pCtx.stroke();
+
+    } else if (currentMode === 'HAADF' || currentMode === 'ABF') {
+        const isHAADF = (currentMode === 'HAADF');
+        const zSignal = Math.pow(elem.z, 1.72);
+        const zRatioAu = (zSignal / Math.pow(79, 1.72)).toFixed(3);
+        const atomsPerCol = Math.max(3, Math.round((sampleThicknessNm * 10) / elem.a));
+        const abfContrast = ((0.18 + Math.pow(elem.z, 0.33) * 0.12) * 100).toFixed(1);
+
+        formulaHTML = isHAADF
+            ? `Rutherford Z-Contrast: <b>I<sub>HAADF</sub> ∝ N<sub>atoms</sub> · Z<sup>1.72</sup></b> &nbsp;(θ<sub>det</sub> = 50–200 mrad)`
+            : `ABF Phase Channeling: <b>C<sub>ABF</sub> = (I<sub>bg</sub> − I<sub>col</sub>) / I<sub>bg</sub> ∝ Z<sup>1/3</sup></b> &nbsp;(θ<sub>det</sub> = 11–22 mrad)`;
+
+        cards = [
+            { label: isHAADF ? 'Z-Contrast Signal' : 'ABF Column Visibility', val: isHAADF ? `${zRatioAu} × I(Au)` : `${abfContrast} % Dip`, sub: `Atomic Number Z = ${elem.z} (${elem.sym})` },
+            { label: 'Atoms per Column', val: `~${atomsPerCol} atoms`, sub: `For t = ${sampleThicknessNm} nm, a = ${elem.a} Å` },
+            { label: 'Column Spacing dcol', val: `${(elem.a * baseHKL.factor).toFixed(2)} Å`, sub: `Line-scan peak-to-peak` },
+            { label: 'STEM Probe FWHM', val: `${(0.78 * Math.pow(200/currentKV, 0.25)).toFixed(2)} Å`, sub: `Aberration-corrected probe` }
+        ];
+        plotTitle = isHAADF ? 'Atomic Column Line-Scan Profile I_HAADF(x) across Yellow Caliper' : 'ABF-STEM Inverted Absorption-Like Line Profile I_ABF(x)';
+        hintText = isHAADF
+            ? '💡 Compare Lithium (Z=3) vs Gold (Z=79): HAADF intensity scales as Z¹·⁷², allowing direct chemical identification and atom counting!'
+            : '💡 ABF-STEM excels at imaging light elements (H, Li, Be, C, O) as sharp dark dips in the line profile.';
+
+        drawAxes(pCtx, pw, ph, 'Line-Scan Position x (Å)', 'Intensity');
+        pCtx.strokeStyle = isHAADF ? '#ffaa00' : '#00ffcc';
+        pCtx.lineWidth = 2;
+        pCtx.beginPath();
+        const peakAmp = isHAADF ? Math.min(72, Math.max(12, Math.pow(elem.z / 79, 0.65) * 68)) : -48;
+        const baseLine = isHAADF ? (ph - 20) : 28;
+        const periodPx = 42 * (elem.a / 4.08);
+        for (let x = 25; x < pw - 10; x++) {
+            const wave = Math.pow(Math.cos(((x - 25) * Math.PI) / periodPx), 6);
+            const py = baseLine - wave * peakAmp;
+            if (x === 25) pCtx.moveTo(x, py); else pCtx.lineTo(x, py);
+        }
+        pCtx.stroke();
+    }
+
+    document.getElementById('quant-formula').innerHTML = formulaHTML;
+    document.getElementById('plot-title').innerText = plotTitle;
+    document.getElementById('quant-hint').innerText = hintText;
+
+    const container = document.getElementById('metrics-container');
+    container.innerHTML = cards.map(c => `
+        <div class="metric-card">
+            <div class="m-label">${c.label}</div>
+            <div class="m-val">${c.val}</div>
+            <div class="m-sub">${c.sub}</div>
+        </div>
+    `).join('');
+}
+
+function drawAxes(ctx, w, h, xLbl, yLbl) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(24, 8); ctx.lineTo(24, h - 18); ctx.lineTo(w - 8, h - 18);
+    ctx.stroke();
+    ctx.fillStyle = '#88a';
+    ctx.font = '9px sans-serif';
+    ctx.fillText(xLbl, w / 2 - 25, h - 5);
+    ctx.save();
+    ctx.translate(11, h / 2 + 15);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText(yLbl, 0, 0);
+    ctx.restore();
+}
+
+// ============================================================================
+// 6. 2D DETECTOR RENDERER WITH METROLOGY CALIPERS
 // ============================================================================
 function getProjected2DLattice(elem, zoneKey, radiusPx) {
-    // Returns 2D projected atomic column coordinates [px, py] for HRTEM, HAADF, ABF
-    const aScale = 26 * (elem.a / 4.08);
+    const aScale = 25 * (elem.a / 4.08);
     const pts = [];
     const st = elem.struct;
-
     let sym6 = (st === 'HCP' && zoneKey === '001') || (st !== 'HCP' && zoneKey === '111');
     let sym2 = (zoneKey === '011') || (st === 'ORTHO') || (st === 'TET');
 
@@ -995,10 +1231,7 @@ function getProjected2DLattice(elem, zoneKey, radiusPx) {
             const py = j * dy;
             if (Math.hypot(px, py) <= radiusPx) {
                 pts.push({ x: px, y: py });
-                // Diamond cubic dumbbell pairs in [011] projection
-                if (st === 'DIA' && zoneKey === '011') {
-                    pts.push({ x: px + dx * 0.25, y: py + dy * 0.25 });
-                }
+                if (st === 'DIA' && zoneKey === '011') pts.push({ x: px + dx * 0.25, y: py + dy * 0.25 });
             }
         }
     }
@@ -1015,29 +1248,18 @@ function render2DDetector(timeSec) {
     ctx.clearRect(0, 0, w, h);
 
     if (currentMode === 'SAED' || currentMode === 'PED') {
-        // Reciprocal Space Spot Pattern
-        const scale = 19.5;
+        const scale = 18.8;
         const bgGrad = ctx.createRadialGradient(cx, cy, 2, cx, cy, 120);
         bgGrad.addColorStop(0, 'rgba(0, 255, 180, 0.16)');
         bgGrad.addColorStop(1, 'rgba(0, 0, 0, 0.95)');
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, w, h);
 
-        // PED shows laser-ring precession indicator and uniform quasi-kinematical intensities
-        if (currentMode === 'PED') {
-            ctx.strokeStyle = 'rgba(0, 210, 255, 0.25)';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.arc(cx, cy, 38, 0, Math.PI * 2);
-            ctx.stroke();
-        }
-
-        currentSpots.forEach(s => {
+        currentSpots.forEach((s, idx) => {
             const px = cx + s.x * scale;
             const py = cy + s.z * scale;
             const isCenter = s.order === 0;
-            // In PED, higher-order spots are sharper and more uniform
-            const radius = isCenter ? 9.5 : (currentMode === 'PED' ? 5.5 : Math.max(3.2, 6.8 - s.order * 1.3));
+            const radius = isCenter ? 9 : (currentMode === 'PED' ? 5.2 : Math.max(3.0, 6.5 - s.order * 1.2));
 
             const grad = ctx.createRadialGradient(px, py, 0.5, px, py, radius * 2.1);
             grad.addColorStop(0, '#ffffff');
@@ -1048,17 +1270,34 @@ function render2DDetector(timeSec) {
             ctx.fillStyle = grad;
             ctx.arc(px, py, radius * 2.1, 0, Math.PI * 2);
             ctx.fill();
-        });
 
+            // Draw yellow measurement caliper to the selected Bragg spot
+            if (idx === selectedSpotIndex && !isCenter) {
+                ctx.strokeStyle = '#ffdd00';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(px, py);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.beginPath();
+                ctx.arc(px, py, 9, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = '#ffdd00';
+                ctx.font = 'bold 10px sans-serif';
+                ctx.fillText(s.hkl || '(hkl)', px + 10, py - 6);
+            }
+        });
         drawScaleBar(ctx, '5 nm⁻¹');
 
     } else if (currentMode === 'CBED') {
-        // Convergent Beam Kossel-Möllenstedt Discs + Kikuchi Lines
-        const scale = 19.5;
+        const scale = 18.8;
         ctx.fillStyle = '#030c09';
         ctx.fillRect(0, 0, w, h);
 
-        // Kikuchi Excess/Deficiency Bands
         ctx.save();
         ctx.translate(cx, cy);
         const kikuchiCount = (currentZone === '111' || (elem.struct === 'HCP' && currentZone === '001')) ? 6 : 4;
@@ -1075,66 +1314,51 @@ function render2DDetector(timeSec) {
         }
         ctx.restore();
 
-        // K-M Diffraction Discs with internal concentric fringes
         currentSpots.filter(s => s.order <= 1.75).forEach(s => {
             const px = cx + s.x * scale;
             const py = cy + s.z * scale;
             const isCenter = s.order === 0;
-            const discR = 15 * (4.08 / elem.a);
-            const clampedR = Math.max(10, Math.min(20, discR));
+            const clampedR = Math.max(10, Math.min(19, 14.5 * (4.08 / elem.a)));
 
             const grad = ctx.createRadialGradient(px, py, 1, px, py, clampedR);
-            if (isCenter) {
-                grad.addColorStop(0, '#ffffff');
-                grad.addColorStop(0.5, '#00ffcc');
-                grad.addColorStop(0.75, '#004433');
-                grad.addColorStop(0.95, '#00ffcc');
-                grad.addColorStop(1, 'rgba(0,0,0,0)');
-            } else {
-                grad.addColorStop(0, 'rgba(0, 255, 204, 0.85)');
-                grad.addColorStop(0.45, 'rgba(0, 80, 60, 0.6)');
-                grad.addColorStop(0.8, 'rgba(0, 255, 204, 0.75)');
-                grad.addColorStop(1, 'rgba(0,0,0,0)');
-            }
+            grad.addColorStop(0, '#ffffff');
+            grad.addColorStop(0.45, '#00ffcc');
+            grad.addColorStop(0.7, '#003326');
+            grad.addColorStop(0.92, '#00ffcc');
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+
             ctx.beginPath();
             ctx.fillStyle = grad;
             ctx.arc(px, py, clampedR, 0, Math.PI * 2);
             ctx.fill();
         });
-
         drawScaleBar(ctx, '10 mrad');
 
     } else if (currentMode === 'BF' || currentMode === 'DF') {
-        // Real-Space Bright-Field / Dark-Field Nanoparticle & Bend Contour Image
         const isBF = (currentMode === 'BF');
-        // Mass-thickness & Z absorption factor
-        const zFactor = Math.min(0.88, 0.25 + (elem.z / 118) * 0.65);
+        const zFactor = Math.min(0.88, 0.22 + (elem.z / 118) * 0.55 + (sampleThicknessNm / 160) * 0.25);
 
-        // Background (Bright in BF, Dark in DF)
         ctx.fillStyle = isBF ? '#d8ece6' : '#05080c';
         ctx.fillRect(0, 0, w, h);
 
-        // Faceted Crystalline Nanoparticle Polygon in center
         ctx.save();
         ctx.translate(cx, cy);
         const sides = (currentZone === '111' || elem.struct === 'HCP') ? 6 : 4;
         ctx.beginPath();
         for (let i = 0; i < sides; i++) {
             const ang = (i * 2 * Math.PI) / sides + (sides === 4 ? Math.PI / 4 : 0);
-            const r = 82;
+            const r = 78;
             if (i === 0) ctx.moveTo(r * Math.cos(ang), r * Math.sin(ang));
             else ctx.lineTo(r * Math.cos(ang), r * Math.sin(ang));
         }
         ctx.closePath();
 
         if (isBF) {
-            // Darker crystalline interior with thickness fringes
-            const bfVal = Math.round(180 * (1 - zFactor));
+            const bfVal = Math.round(190 * (1 - zFactor));
             ctx.fillStyle = `rgb(${bfVal}, ${bfVal + 18}, ${bfVal + 15})`;
             ctx.fill();
         } else {
-            // Bright glowing Bragg-diffracting crystal in DF-TEM
-            const dfGrad = ctx.createRadialGradient(0, 0, 5, 0, 0, 85);
+            const dfGrad = ctx.createRadialGradient(0, 0, 5, 0, 0, 80);
             dfGrad.addColorStop(0, '#ffffff');
             dfGrad.addColorStop(0.6, '#00ffcc');
             dfGrad.addColorStop(1, '#004433');
@@ -1142,92 +1366,73 @@ function render2DDetector(timeSec) {
             ctx.fill();
         }
 
-        // Extinction Thickness Fringes & Bend Contours inside crystal
+        // Draw dynamic thickness fringes inside crystal
+        const numRings = Math.max(1, Math.min(5, Math.round(sampleThicknessNm / 24)));
         ctx.strokeStyle = isBF ? 'rgba(0, 30, 25, 0.45)' : 'rgba(255, 255, 255, 0.55)';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
         ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(0, 0, 48, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(0, 0, 26, 0, Math.PI * 2);
-        ctx.stroke();
+        for (let rIdx = 1; rIdx <= numRings; rIdx++) {
+            ctx.beginPath();
+            ctx.arc(0, 0, (65 / numRings) * rIdx, 0, Math.PI * 2);
+            ctx.stroke();
+        }
         ctx.restore();
-
         drawScaleBar(ctx, '20 nm', isBF ? '#00221a' : '#00ffcc');
 
-    } else if (currentMode === 'HRTEM') {
-        // High-Resolution Phase-Contrast Atomic Lattice Fringe Image
-        ctx.fillStyle = '#0c1f1a';
-        ctx.fillRect(0, 0, w, h);
-
-        const cols = getProjected2DLattice(elem, currentZone, 130);
-        const colR = 9 * (elem.a / 4.08);
-
-        cols.forEach(pt => {
-            const px = cx + pt.x;
-            const py = cy + pt.y;
-            const grad = ctx.createRadialGradient(px, py, 0.5, px, py, colR);
-            grad.addColorStop(0, '#ffffff');
-            grad.addColorStop(0.45, '#77ffdd');
-            grad.addColorStop(1, 'rgba(12, 31, 26, 0)');
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.arc(px, py, colR, 0, Math.PI * 2);
-            ctx.fill();
-        });
-
-        drawScaleBar(ctx, '0.5 nm');
-
-    } else if (currentMode === 'HAADF' || currentMode === 'ABF') {
-        // STEM Rastering Atomic Column Image
+    } else if (currentMode === 'HRTEM' || currentMode === 'HAADF' || currentMode === 'ABF') {
+        const isHRTEM = (currentMode === 'HRTEM');
         const isHAADF = (currentMode === 'HAADF');
-
-        // Z-contrast brightness factor for HAADF: scales with Z^1.7 (normalized for visual clarity)
         const zNorm = Math.pow(elem.z / 79, 0.65);
         const intensity = Math.min(1.0, Math.max(0.18, zNorm));
 
-        ctx.fillStyle = isHAADF ? '#030408' : '#b8d8d0';
+        ctx.fillStyle = isHRTEM ? '#0c1f1a' : (isHAADF ? '#030408' : '#b8d8d0');
         ctx.fillRect(0, 0, w, h);
 
-        const cols = getProjected2DLattice(elem, currentZone, 130);
-        const colR = 8.5 * (elem.a / 4.08);
+        const cols = getProjected2DLattice(elem, currentZone, 125);
+        const colR = 8.2 * (elem.a / 4.08);
 
         cols.forEach(pt => {
             const px = cx + pt.x;
             const py = cy + pt.y;
             const grad = ctx.createRadialGradient(px, py, 0.5, px, py, colR);
 
-            if (isHAADF) {
-                // Bright Z-contrast spots on dark background
+            if (isHRTEM) {
+                grad.addColorStop(0, '#ffffff');
+                grad.addColorStop(0.45, '#77ffdd');
+                grad.addColorStop(1, 'rgba(12, 31, 26, 0)');
+            } else if (isHAADF) {
                 grad.addColorStop(0, `rgba(255, 255, 240, ${intensity})`);
                 grad.addColorStop(0.4, `rgba(255, 160, 30, ${intensity * 0.85})`);
                 grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
             } else {
-                // ABF-STEM: Dark absorption-like atomic columns on bright background (great for light elements)
                 grad.addColorStop(0, 'rgba(10, 25, 22, 0.92)');
                 grad.addColorStop(0.5, 'rgba(20, 50, 45, 0.55)');
                 grad.addColorStop(1, 'rgba(184, 216, 208, 0)');
             }
-
             ctx.fillStyle = grad;
             ctx.beginPath();
             ctx.arc(px, py, colR, 0, Math.PI * 2);
             ctx.fill();
         });
 
-        // Animated Green STEM Raster Scan Line
-        const scanY = ((timeSec * 65) % w);
-        ctx.strokeStyle = isHAADF ? 'rgba(0, 255, 204, 0.65)' : 'rgba(0, 100, 80, 0.65)';
+        // Draw Yellow Line-Scan Caliper across Central Atomic Row
+        ctx.strokeStyle = '#ffdd00';
         ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 3]);
         ctx.beginPath();
-        ctx.moveTo(0, scanY);
-        ctx.lineTo(w, scanY);
+        ctx.moveTo(cx - 65, cy);
+        ctx.lineTo(cx + 65, cy);
         ctx.stroke();
+        ctx.setLineDash([]);
 
-        drawScaleBar(ctx, '0.5 nm', isHAADF ? '#ffaa00' : '#00332a');
+        if (!isHRTEM) {
+            const scanY = ((timeSec * 65) % w);
+            ctx.strokeStyle = isHAADF ? 'rgba(0, 255, 204, 0.65)' : 'rgba(0, 100, 80, 0.65)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(0, scanY); ctx.lineTo(w, scanY);
+            ctx.stroke();
+        }
+        drawScaleBar(ctx, '0.5 nm', isHAADF ? '#ffaa00' : (isHRTEM ? '#00ffcc' : '#00332a'));
     }
 
     screenTexture.needsUpdate = true;
@@ -1237,16 +1442,38 @@ function drawScaleBar(ctx, label, color = '#00ffcc') {
     ctx.strokeStyle = color;
     ctx.lineWidth = 2.2;
     ctx.beginPath();
-    ctx.moveTo(28, 240);
-    ctx.lineTo(78, 240);
+    ctx.moveTo(26, 232); ctx.lineTo(74, 232);
     ctx.stroke();
     ctx.fillStyle = color;
     ctx.font = 'bold 10px sans-serif';
-    ctx.fillText(label, 35, 233);
+    ctx.fillText(label, 32, 225);
 }
 
+// Allow clicking on 2D detector in SAED / PED / DF modes to pick a Bragg spot
+document.getElementById('detector-canvas').addEventListener('click', (e) => {
+    if (currentMode !== 'SAED' && currentMode !== 'PED' && currentMode !== 'DF') return;
+    const rect = e.target.getBoundingClientRect();
+    const clickX = e.clientX - rect.left - rect.width / 2;
+    const clickY = e.clientY - rect.top - rect.height / 2;
+    const scale = 18.8;
+
+    let bestIdx = -1;
+    let bestDist = 999;
+    currentSpots.forEach((s, idx) => {
+        if (s.order === 0) return;
+        const d = Math.hypot(s.x * scale - clickX, s.z * scale - clickY);
+        if (d < bestDist) { bestDist = d; bestIdx = idx; }
+    });
+    if (bestIdx >= 0 && bestDist < 28) {
+        selectedSpotIndex = bestIdx;
+        updateColumnAndRays();
+        render2DDetector(0);
+        updateQuantitativeMetrology();
+    }
+});
+
 // ============================================================================
-// 6. UI CONTROLS & INTERACTION HANDLERS
+// 7. UI HANDLERS & INITIALIZATION
 // ============================================================================
 function getZoneRotation(struct, zoneKey) {
     if (struct === 'HCP') {
@@ -1260,21 +1487,23 @@ function getZoneRotation(struct, zoneKey) {
     }
 }
 
+window.updateMicroscopeParams = function() {
+    currentKV = parseInt(document.getElementById('kv-select').value);
+    sampleThicknessNm = parseInt(document.getElementById('thick-slider').value);
+    document.getElementById('lbl-thick').innerText = sampleThicknessNm + ' nm';
+    render2DDetector(0);
+    updateQuantitativeMetrology();
+};
+
 window.setTEMMode = function(modeKey) {
     currentMode = modeKey;
     document.querySelectorAll('.mode-grid button').forEach(b => b.classList.remove('active'));
     document.getElementById('mode-' + modeKey).classList.add('active');
-
-    const info = MODE_INFO[modeKey];
-    document.getElementById('mode-title').innerText = info.title;
-    document.getElementById('mode-desc').innerText = info.desc;
-    document.getElementById('col-illum').innerText = info.illum;
-    document.getElementById('col-ap').innerText = info.ap;
-    document.getElementById('col-det').innerText = info.det;
-    document.getElementById('hud-mode-lbl').innerText = info.hud;
+    document.getElementById('hud-mode-lbl').innerText = modeKey + ' Output';
 
     updateColumnAndRays();
     render2DDetector(0);
+    updateQuantitativeMetrology();
 };
 
 window.selectElement = function(z) {
@@ -1321,8 +1550,10 @@ window.setZoneAxis = function(zoneKey) {
         duration: 0.85, ease: "power2.inOut"
     });
 
+    selectedSpotIndex = -1;
     updateColumnAndRays();
     render2DDetector(0);
+    updateQuantitativeMetrology();
 };
 
 window.moveCamera = function(view) {
@@ -1330,7 +1561,7 @@ window.moveCamera = function(view) {
     gsap.killTweensOf(controls.target);
 
     if (view === 'overview') {
-        gsap.to(camera.position, { x: 23, y: 10, z: 19, duration: 1.4, ease: "power2.inOut" });
+        gsap.to(camera.position, { x: 24, y: 10, z: 20, duration: 1.4, ease: "power2.inOut" });
         gsap.to(controls.target, { x: 0, y: -3, z: 0, duration: 1.4, ease: "power2.inOut" });
     } else if (view === 'crystal') {
         gsap.to(camera.position, { x: 0.05, y: 6.5, z: 0.05, duration: 1.4, ease: "power2.inOut" });
@@ -1352,7 +1583,7 @@ window.followElectronBeam = function() {
       .to(controls.target, { x: 0, y: -6, z: 0, duration: 1.8, ease: "none" }, "<")
       .to(camera.position, { x: 4, y: -6, z: 6, duration: 2.0, ease: "power1.out" })
       .to(controls.target, { x: 0, y: screenY, z: 0, duration: 2.0, ease: "power1.out" }, "<")
-      .to(camera.position, { x: 22, y: 8, z: 18, duration: 1.8, ease: "power2.inOut", delay: 0.8 })
+      .to(camera.position, { x: 24, y: 9, z: 20, duration: 1.8, ease: "power2.inOut", delay: 0.8 })
       .to(controls.target, { x: 0, y: -3, z: 0, duration: 1.8, ease: "power2.inOut" }, "<");
 };
 
@@ -1413,7 +1644,7 @@ function initUI() {
 initUI();
 
 // ============================================================================
-// 7. ANIMATION LOOP (PARTICLES, PRECESSION & STEM RASTER)
+// 8. ANIMATION LOOP
 // ============================================================================
 const clock = new THREE.Clock();
 
@@ -1422,20 +1653,17 @@ function animate() {
     const delta = clock.getDelta();
     const elapsed = clock.getElapsedTime();
 
-    // 1. Precession Electron Diffraction (PED) Hollow-Cone Rocking
     if (currentMode === 'PED') {
         const tilt = 0.085;
         incBeamGroup.rotation.x = Math.cos(elapsed * 6) * tilt;
         incBeamGroup.rotation.z = Math.sin(elapsed * 6) * tilt;
     } else if (currentMode === 'HAADF' || currentMode === 'ABF') {
-        // 2. STEM Probe Rastering across the Crystal
         const scanX = Math.sin(elapsed * 8) * 0.75;
         const scanZ = ((elapsed * 0.8) % 1.5) - 0.75;
         incBeamGroup.position.set(scanX, 0, scanZ);
         render2DDetector(elapsed);
     }
 
-    // 3. Update Electron Particles
     const posAttr = electronParticles.geometry.attributes.position;
     const positions = posAttr.array;
     const speed = 12 * delta;
@@ -1443,8 +1671,6 @@ function animate() {
     for (let i = 0; i < particleCount; i++) {
         let y = positions[i * 3 + 1];
         y -= speed;
-
-        // Stop blocked rays at the Objective Aperture (Back Focal Plane Y = -5.0)
         const minAllowedY = pTargets[i].blocked ? bfpY : screenY;
 
         if (y < minAllowedY) {
@@ -1458,12 +1684,10 @@ function animate() {
             positions[i * 3] = pTargets[i].x * progress;
             positions[i * 3 + 2] = pTargets[i].z * progress;
         } else if (currentMode === 'HAADF' || currentMode === 'ABF') {
-            // Converge onto scanning probe position
             const topProgress = (14 - y) / 14;
             positions[i * 3] = incBeamGroup.position.x * topProgress;
             positions[i * 3 + 2] = incBeamGroup.position.z * topProgress;
         }
-
         positions[i * 3 + 1] = y;
     }
     posAttr.needsUpdate = true;
